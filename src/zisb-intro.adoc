@@ -70,7 +70,7 @@ This extension does not address leakage through incidental channels that do not
 rely on transient execution, such as power, thermal, electromagnetic, or other
 non-cache-based side channels.
 
-The Zisb extension depends on the Zimop extension. 
+The Zisb extension depends on the Zimop extension.
 
 [NOTE]
 ====
