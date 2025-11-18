@@ -1,0 +1,85 @@
+[[intro]]
+== "Zisb" Extension for Speculation Barrier Instructions, Version 0.0.1
+
+Modern CPU pipelines are massively parallelized, leveraging techniques such as
+control flow speculation, data value speculation, and data dependency
+speculation to enhance efficiency and avoid stalls caused by unresolved
+instruction dependencies. However, this aggressive speculation introduces
+vulnerabilities to transient execution attacks like Spectre, which exploit
+speculative execution to leak sensitive data. The Zisb extension addresses these
+vulnerabilities by introducing speculation barriers, enabling developers to
+explicitly control speculation boundaries and ensure that transient
+execution--arising from control flow, data value, or dependency
+speculation--does not expose data through side channels.
+
+Side Channel is defined as a channel is any medium in a computing system that
+may transmit or signal information. Legitimate channels are those intended by
+system designers for the transmission of information; all other channels are
+incidental channels. An incidental channel becomes a covert channel if an
+adversary can control both its input and output. It serves as a side channel
+if the adversary can only observe its output, without controlling its input.
+
+Processors that predict the outcomes of branches or loads may use a speculative
+value before confirming its correctness, allowing execution to proceed
+temporarily based on that prediction. If the speculation is correct, dependent
+instructions are valid and may retire. If the speculative value is incorrect,
+the dependent instructions must be flushed from the pipeline and re-executed
+with the correct value. These flushed instructions are known as transient
+instructions. Although transient instructions do not commit results to
+architectural state, they can affect microarchitectural state (e.g., caches).
+This microarchitectural state forms an incidental channel, which can be observed
+using side-channel techniques such as Flush+Reload or Prime+Probe, which measure
+the timing of accesses to that state.
+
+Transient Execution Attacks are attacks that exploit the side effects of
+transient execution. These attacks access a victim’s secrets and transmit them
+via a covert channel using a disclosure gadget. A disclosure gadget is an
+instruction sequence that can execute transiently and a) access a victim's
+secrets, and b) transmit that secret over a covert channel.
+
+Transient execution attacks can be classified into the following categories:
+
+* Domain-bypass attacks bypass hardware access controls such as privilege
+  separation or page tables. Example: Rogue Data Cache Load (Meltdown).
+
+* Cross-domain attacks require a disclosure gadget in the victim's domain, which
+  can be transiently executed to access and transmit a secret. Example: Branch
+  Target Injection (Spectre Variant 2).
+
+* In-domain attacks allow an adversary to access a secret within the same domain
+  by circumventing software-based access controls. Example: Bounds Check Bypass
+  (Spectre Variant 1).
+
+The domain-bypass and cross-domain attacks can be mitigated through
+microarchitectural techniques such as not allowing faulting loads to provide
+data to dependent instructions and tagging predictors with information such as
+the privilege mode that identifies the domain in which the prediction was
+created. The in-domain attacks primarily bypass software-based access controls,
+and these boundaries are typically not visible to hardware.
+
+The Zisb extension provides mechanisms to control speculation leading to
+in-domain and cross-domain attacks through the use of speculation barrier
+instructions to explicitly control speculation boundaries and ensure that
+transient execution--arising from control flow, data value, or dependency
+speculation--does not expose data through side channels.
+
+The barrier instructions do not flush or clear predictions. They augment
+techniques such as tagging predictions with domain information to disallow
+use of predictions created in one domain when executing in another domain.
+This extension does not address leakage through incidental channels that do not
+rely on transient execution, such as power, thermal, electromagnetic, or other
+non-cache-based side channels.
+
+The Zisb extension depends on the Zimop extension. 
+
+[NOTE]
+====
+These instructions are encoded using Zimop code points, enabling programs to
+functionally execute on processors that support the Zimop extension, even if
+they do not implement the Zisb instructions. This ensures compatibility with
+processors that either lack Zisb support or do not require it due to the absence
+of speculative execution. Unlike HINT instructions, which may or may not be
+honored by hardware, Zisb instructions represent a strict contract between the
+program and the hardware. The semantics of this contract must always be honored,
+ensuring robust defense against transient execution vulnerabilities.
+====

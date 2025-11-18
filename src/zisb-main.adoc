@@ -19,7 +19,7 @@ include::../docs-resources/global-config.adoc[]
 //:WaveDromEditorApp: app/wavedrom-editor.app
 :imagesoutdir: images
 //:srcdir: src
-:bibtex-file: src/example.bib
+:bibtex-file: src/zisb.bib
 :bibtex-order: alphabetical
 :bibtex-style: apa
 :icons: font
@@ -70,8 +70,8 @@ Copyright 2025 by RISC-V International.
 [preface]
 include::contributors.adoc[]
 
-include::intro.adoc[]
-include::chapter2.adoc[]
+include::zisb-intro.adoc[]
+include::zisb-insn.adoc[]
 
 // The index must precede the bibliography
 include::index.adoc[]
