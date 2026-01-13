@@ -30,7 +30,10 @@ discarded, the architectural state is recovered, and control flow continues
 along the correct path. Speculative execution that occurs before the branch
 outcome is verified may be used to leak data through side channels. The TEB
 may be used to control such control-flow speculation, as illustrated by the
-following code snippet.
+following code snippet. This example assumes that the shared data cache can
+be exploited as a covert channel, allowing an attacker to infer sensitive
+information by observing cache access patterns resulting from speculative
+execution.
 
 [listing]
  1. void bounds_check_bypass_example(uint32_t x,
