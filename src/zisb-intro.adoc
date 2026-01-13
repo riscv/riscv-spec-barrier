@@ -52,7 +52,7 @@ Transient execution attacks can be classified into the following categories:
 
 The domain-bypass attacks can be mitigated through microarchitectural techniques
 such as not allowing faulting loads to provide data to dependent instructions.
-The cross-domain attacks cab be mitigated by tagging predictors with information
+The cross-domain attacks can be mitigated by tagging predictors with information
 such as the privilege mode that identifies the domain in which the prediction was
 created and not using predictions learned in one domain to predict outcomes in
 another domain. The in-domain attacks primarily bypass software-based access
