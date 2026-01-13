@@ -62,7 +62,7 @@ following code snippet.
 The MDB instruction has the following barrier semantics:
 
 * An instruction that loads from memory and appears in program order after MDB
-  must obtain its data from an instruction that stores to the same physical
+  must obtain its data from the last instruction that stores to the same physical
   memory location and appears in program order before MDB. These semantics shall
   be enforced regardless of whether the load and/or the store are speculative
   and regardless of whether the load and/or store eventually complete.
@@ -79,7 +79,7 @@ Such a load may execute even if it is speculative.
 ====
 
 * Instructions that load from memory and precede MDB in program order must not
-  speculatively obtain their data from instructions that store to memory and
+  speculatively obtain their data from any instructions that store to memory and
   appear in program order after MDB.
 
 [NOTE]
