@@ -58,11 +58,13 @@ created and not using predictions learned in one domain to predict outcomes in
 another domain. The in-domain attacks primarily bypass software-based access
 controls, and these boundaries are typically not visible to hardware.
 
-The Zisb extension provides mechanisms to control speculation leading to
-in-domain and cross-domain attacks through the use of speculation barrier
-instructions to explicitly control speculation boundaries and ensure that
-transient execution--arising from control flow, data value, or dependency
-speculation--does not expose data through side channels.
+When Zisb is implemented, the predictions learned in one domain cannot be used
+to predict outcomes in another domain. The Zisb extension additionally provides
+mechanisms to control speculation leading to in-domain and cross-domain attacks
+through the use of speculation barrier instructions to explicitly control
+speculation boundaries and ensure that transient execution--arising from control
+flow, data value, or dependency speculation--does not expose data through side
+channels.
 
 The barrier instructions do not flush or clear predictions. They augment
 techniques such as tagging predictions with domain information to disallow
