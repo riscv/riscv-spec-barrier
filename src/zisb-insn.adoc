@@ -1,11 +1,60 @@
 == Speculation Barrier Instructions
 
-The Zisb extension provides three barrier instructions to control transient
-execution:
+Zisb defines a hardware protection domain that consists of code and data
+within a protection boundary defined by hardware-enforced access control
+mechanisms. A hardware protection domain is identified by the combination
+of the following identifiers:
 
-* TEB (Transient Execution Barrier): due to control-flow prediction.
-* MDB (Memory Disambiguation Barrier): due to data-dependency prediction.
-* DPB (Data-Value Prediction Barrier): due to data-value prediction.
+* The current privilege level.
+* The current address space identifier (ASID), when the supervisor mode is also
+  implemented and the `satp.MODE` is not `Bare`.
+* When the H extension is also implemented:
+
+  ** The current virtualization mode.
+  ** The current virtual machine identifier (VMID), when the `hgatp.MODE` is not
+     `Bare`.
+
+* When the Smsdid extension is also implemented:
+  ** The current supervisor domain identifier (SDID)
+
+When the Zisb extension is implemented, predictions learned in one hardware
+protection domain cannot be used to predict outcomes in another hardware
+protection domain.
+
+When an identifier used to identify a hardware protection domain is reused,
+software must execute fence.time to ensure that predictions created by code that
+previously executed in that hardware protection domain do not affect outcomes
+for code that subsequently executes in that hardware protection domain.
+
+[NOTE]
+====
+When Zisb is implemented, the predictors for control-flow, data-dependency, and
+data-value prediction may be tagged with the identifiers of the hardware
+protection domain in which they were learned to prevent their use in predicting
+outcomes in a different hardware protection domain. Alternatively, the
+implementation may invalidate or clear predictions when the hardware protection
+domain changes. A combination of these two techniques may also be employed,
+wherein some types of predictors use tagging and others use invalidation as a
+defense.
+
+Executing `fence.time` may incur substantial overhead. When Zisb is implemented,
+`fence.time` is required only when an identifier is reused. If an implementation
+provides a sufficiently large identifier space, reuse is infrequent, which
+mitigates the cost of invoking the fence.
+====
+
+The Zisb extension provides three barrier instructions to control speculation
+that could lead to in-domain attacks. Using these barrier instructions allows
+explicit control of speculation boundaries to ensure that transient execution
+--arising from control-flow, data-value, or data-dependency speculation--does
+not expose data through side channels.
+
+* TEB (Transient Execution Barrier): mitigates transient execution due
+  to control-flow prediction.
+* MDB (Memory Disambiguation Barrier): mitigates transient execution due
+  to data-dependency prediction.
+* DPB (Data-Value Prediction Barrier): mitigates transient execution due
+  to data-value prediction.
 
 === TEB - Transient Execution Barrier
 
