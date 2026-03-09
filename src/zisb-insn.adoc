@@ -1,4 +1,30 @@
-== Speculation Barrier Instructions
+== "Zisb" Extension for Speculation Barrier Instructions, Version 0.0.1
+
+The Zisb extension provides mechanisms to control speculation leading to
+in-domain attacks through the use of speculation barrier instructions to
+explicitly control speculation boundaries and ensure that transient
+execution--arising from control flow, data value, or dependency speculation--does
+not expose data through cache-based side channels.
+
+The barrier instructions do not flush or clear predictions. They augment
+techniques such as tagging predictions with domain information to disallow
+use of predictions created in one domain when executing in another domain.
+This extension does not address leakage through incidental channels such as power,
+thermal, electromagnetic, or other non-cache-based side channels.
+
+The Zisb extension depends on the Zimop extension.
+
+[NOTE]
+====
+These instructions are encoded using Zimop code points, enabling programs to
+functionally execute on processors that support the Zimop extension, even if
+they do not implement the Zisb instructions. This ensures compatibility with
+processors that either lack Zisb support or do not require it due to the absence
+of speculative execution. Unlike HINT instructions, which may or may not be
+honored by hardware, Zisb instructions represent a strict contract between the
+program and the hardware. The semantics of this contract must always be honored,
+ensuring robust defense against transient execution vulnerabilities.
+====
 
 The Zisb extension provides three barrier instructions to control speculation
 that could lead to in-domain attacks. Using these barrier instructions allows

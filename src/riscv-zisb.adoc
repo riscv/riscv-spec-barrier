@@ -71,6 +71,7 @@ include::contributors.adoc[]
 
 include::zisb-intro.adoc[]
 include::zisb-insn.adoc[]
+include::zihpd.adoc[]
 
 // The index must precede the bibliography
 include::index.adoc[]

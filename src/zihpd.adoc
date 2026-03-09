@@ -1,0 +1,100 @@
+== "Zihpd" - Hardware Protection Domains, Version 0.1
+
+Zihpd defines a hardware protection domain that consists of code and data
+within a protection boundary defined by hardware-enforced access control
+mechanisms. A hardware protection domain is identified by the combination
+of the following identifiers:
+
+* The current privilege level.
+
+* The address space identifier (`satp.ASID`) when supervisor mode is also
+  implemented, the current privilege level is S or U, and the `satp.MODE` is not
+   `Bare`.
+
+* When the H or Shbare extension is also implemented:
+
+  ** The current virtualization mode (`V`).
+  ** The current virtual machine identifier (`hgatp.VMID`), when `hgatp.MODE` is
+     not `Bare` and `V=1`.
+  ** The address space identifier (`satp.ASID`), when the current privilege
+     level is HS and `satp.MODE` is not `Bare`.
+  ** The address space identifier (`vsatp.ASID`), when the current privilege
+     level is VS or VU and `vsatp.MODE` is not `Bare`.
+
+
+* When the Smsdid extension is also implemented:
+  ** The current supervisor domain identifier (SDID).
+
+== "Zifencehpd" - Hardware Protection Domain Fence, Version 0.1
+
+When the Zifencehpd extension is implemented, predictions learned in one
+hardware protection domain cannot be used to predict outcomes in another
+hardware protection domain to address cross-domain transient execution attacks.
+
+[NOTE]
+====
+When Zifencehpd is implemented, the predictors for control-flow, data-dependency,
+and data-value prediction may be tagged with the identifiers of the hardware
+protection domain in which they were learned to prevent their use in predicting
+outcomes in a different hardware protection domain. Alternatively, the
+implementation may invalidate or clear predictions when the hardware protection
+domain changes. Other implementation-specific mechanisms may also be employed.
+A combination of these two techniques may also be employed, wherein some types
+of predictors use tagging and others use invalidation as a defense.
+====
+
+The Zifencehpd extension introduces an unprivileged `fence.hpd`
+instruction. Execution of `fence.hpd` ensures that predictions created
+in hardware protection domains using identifiers controlled by the
+current and lower privilege levels, if any, before the fence was
+issued, cannot be used to predict outcomes in those hardware protection
+domains after the fence completes.
+
+[NOTE]
+====
+Execution of `fence.hpd` only affects hardware protection domains that
+use identifiers controlled by the current privilege level and all lower
+privilege levels than the privilege level at which the fence was issued.
+For instance, when issued at VS level, the fence affects all hardware
+protection domains identified by the current VMID and the current SDID.
+====
+
+When the H extension is also implemented, the `fence.hpd` instruction
+invoked at VS level raises a virtual instruction exception if
+`hstatus.VTSR` is 1.
+
+The `fence.hpd` instruction invoked at S/HS level raises an illegal
+instruction exception if `mstatus.TSR` is 1.
+
+[NOTE]
+====
+When nested virtualization is enabled, the root hypervisor may use
+`hstatus.VTSR` to trap execution of `fence.hpd` in a virtual machine that
+executes a guest hypervisor, in order to emulate the effects of
+`fence.hpd` for the VMs created by the guest hypervisor by executing
+`fence.hpd` at HS level.
+
+We use `VTSR`/`TSR` controls to trap execution of `fence.hpd`, as these
+controls are expected to be enabled by the root hypervisor in order to
+emulate an `SRET` from the guest hypervisor to its guest. Trapping and
+emulation of `SRET` are not required if the guest hypervisor is
+enlightened to use a hypercall to resume its guest. In such cases, the
+guest hypervisor must also be enlightened to use a hypercall to invoke
+`fence.hpd` when it needs to affect execution of its guests.
+====
+
+Zifencehpd extension depends on the Zihpd extension.
+
+[NOTE]
+====
+When an identifier used to identify a hardware protection domain is reused,
+software must execute `fence.hpd` to ensure that predictions created by code
+that previously executed in the hardware protection domain identified by the
+reused identifier do not affect outcomes for code that subsequently executes in
+those hardware protection domain.
+
+Executing `fence.hpd` may incur substantial overhead. Execution of `fence.hpd`
+is required only when an identifier is reused. If an implementation provides a
+sufficiently large identifier space, reuse is infrequent, which mitigates the
+cost of invoking the fence.
+====
