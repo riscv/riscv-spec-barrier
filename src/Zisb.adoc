@@ -1,10 +1,21 @@
 = RISC-V Speculation Barrier Instructions (Zisb)
 include::../docs-resources/global-config.adoc[]
+ifndef::revnumber[:revnumber: v0.0]
+ifndef::revdate[:revdate: 1/2023]
+// Ratification-layer attribute defaults, and the fallbacks below only apply
+// when the Makefile doesn't pass -a overrides (e.g. a manual asciidoctor
+// invocation). Skipped in doc mode (-a doc-mode is set): a non-ratified doc
+// has no phase/milestone/revremark to fall back to. See scripts/release-info.sh.
+ifndef::doc-mode[]
+ifndef::phase[:phase: draft-and-development]
+ifndef::phase_display[:phase_display: {phase}]
+ifndef::phase_notice[:phase_notice: Assume everything is subject to change. At this stage, ideas, structures, and content are still evolving. Feedback and iteration are encouraged as nothing is final, and adjustments may be frequent.]
+ifndef::revremark[:revremark: This document is under development. Expect potential changes. Visit http://riscv.org/spec-state for further details.]
+ifndef::milestone_id[:milestone_id: {phase}]
+endif::doc-mode[]
+ifndef::spec_short[:spec_short: Zisb]
 :docgroup: RISC-V Task Group
 :description: RISC-V Speculation Barrier Instructions (Zisb)
-:revdate: 1/2023
-:revnumber: 1.0
-:revremark: This document is under development. Expect potential changes. Visit http://riscv.org/spec-state for further details.
 :revinfo:
 :preface-title: Preamble
 :colophon:
@@ -25,8 +36,9 @@ include::../docs-resources/global-config.adoc[]
 :lang: en
 :listing-caption: Listing
 :sectnums:
-:toc: left
+:toc: macro
 :toclevels: 4
+:toc-title: Table of Contents
 :source-highlighter: pygments
 ifdef::backend-pdf[]
 :source-highlighter: coderay
@@ -36,6 +48,18 @@ endif::[]
 :stem: latexmath
 :footnote:
 :xrefstyle: short
+
+// "Document State" preface is the phase Note rendered as page 2 of the PDF
+// (TOC is placed after it via the toc::[] macro below). See ARC_SUBMISSION.md 3.3.
+// Doc mode (non-ratified documentation) has no phase to report, so the whole
+// preface is dropped straight through to the TOC.
+ifndef::doc-mode[]
+[preface]
+== Document State
+*Note:* {phase_notice}
+endif::doc-mode[]
+
+toc::[]
 
 [preface]
 == List of figures
@@ -48,14 +72,6 @@ list-of::table[hide_empty_section=true, enhanced_rendering=true]
 [preface]
 == List of listings
 list-of::listing[hide_empty_section=true, enhanced_rendering=true]
-
-[WARNING]
-.This document is in the link:http://riscv.org/spec-state[Development state]
-====
-Expect potential changes. This draft specification is likely to evolve before
-it is accepted as a standard. Implementations based on this draft
-may not conform to the future standard.
-====
 
 [preface]
 == Copyright and license information
